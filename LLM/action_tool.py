@@ -35,7 +35,7 @@ class ActionTool(Tool):
 
         str2write = f"{datetime_str} :: {self.name} {text}"
         writing_successful = False
-        while !writing_successful:
+        while not writing_successful:
             try:
                 with open(self.model_comm_filepath, 'w') as file:
                     file.write(str2write)
@@ -47,7 +47,7 @@ class ActionTool(Tool):
         observation = None
         while observation is None:
             listening_successful = False
-            while !listening_successful:
+            while not listening_successful:
                 try:
                     with open(self.model_comm_filepath, 'r') as file:
                         text = file.read()

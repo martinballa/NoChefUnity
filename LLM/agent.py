@@ -4,7 +4,7 @@ import os
 import time
 
 from text_generation import Client
-from llm import HuggingFaceTextGenInference
+from .llm import HuggingFaceTextGenInference
 import langchain
 from langchain.memory import ConversationBufferWindowMemory
 
@@ -14,9 +14,9 @@ from langchain.agents import (
     LLMSingleActionAgent,
     AgentOutputParser,
 )
-from action_tool import ActionTool
+from .action_tool import ActionTool
 
-from agent_executor import ReACTAgentExecutor
+from .agent_executor import ReACTAgentExecutor
 from langchain.prompts import (
     StringPromptTemplate,
 )
