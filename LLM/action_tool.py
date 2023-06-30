@@ -8,6 +8,9 @@ from langchain.agents import Tool
 
 
 class ActionTool(Tool):
+    # Filepath for communication with Model:
+    model_comm_filepath:str=''
+
     def __init__(
         self,
         name:str,

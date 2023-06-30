@@ -1,10 +1,10 @@
-from typing import List, Union
+from typing import Dict, List, Union, Any
 import re
 import os 
 import time
 
 from text_generation import Client
-from .llm import HuggingFaceTextGenInference
+from llm import HuggingFaceTextGenInference
 import langchain
 from langchain.memory import ConversationBufferWindowMemory
 
@@ -14,9 +14,9 @@ from langchain.agents import (
     LLMSingleActionAgent,
     AgentOutputParser,
 )
-from .action_tool import ActionTool
+from action_tool import ActionTool
 
-from .agent_executor import ReACTAgentExecutor
+from agent_executor import ReACTAgentExecutor
 from langchain.prompts import (
     StringPromptTemplate,
 )
@@ -32,7 +32,7 @@ from langchain.embeddings.huggingface import HuggingFaceEmbeddings
 
 
 def generate_react_agent(
-    llm_dict,
+    llm_dict={},
     inference_server_url = "https://api-inference.huggingface.co/models/timdettmers/guanaco-33b-merged",
     max_new_tokens = 1024,
     top_k = 10,
@@ -41,7 +41,7 @@ def generate_react_agent(
     temperature = 0.1,
     repetition_penalty = 1.2,
     use_tool_retriever=True,
-) -> WrappedAgent :
+) -> AgentExecutor:
 
     os.environ["HF_API_TOKEN"] = "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"
     HF_TOKEN = os.environ.get("HF_API_TOKEN", "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")
@@ -217,7 +217,7 @@ Context to consider:
         template=react_template_with_context,
         tools=react_tools,
         # TODO : make some more elaborate profiles
-        profile=angry_profile
+        profile=angry_profile,
         input_variables=["input", "intermediate_steps", 'history'] #"context"] 
     )
     
@@ -291,8 +291,4 @@ Context to consider:
         #early_stopping_method='generate',
     )
      
-    wrappedAgent = WrappedAgent(
-        agent_executor=react_agent_executor,
-    )
-
-    return wrappedAgent
+    return react_agent_executor
