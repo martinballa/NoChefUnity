@@ -40,7 +40,10 @@ def generate_react_agent(
     typical_p = 0.95,
     temperature = 0.1,
     repetition_penalty = 1.2,
-    use_tool_retriever=True,
+    #use_tool_retriever=True,
+    tool_list:List=[],
+    model_comm_filepath:str="./model_com.txt", 
+    profile="You are angry, and this anger is slightly toxic to the room you are in.",
 ) -> AgentExecutor:
 
     os.environ["HF_API_TOKEN"] = "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"
@@ -63,34 +66,29 @@ def generate_react_agent(
     # These ActionTool's will make the whole ReAct loop hang
     # until the model provides a relevant observation for the 
     # loop to carry on.
-    model_comm_filepath = "./model_com.txt" 
     moveto_tool = ActionTool(
         name="MoveTo",
-        description="""
-        Move the avatar to a specific position in the environment.
-        The input must be a 2D tuple.
-        """,
+        description="Move the avatar to a specific position in the environment.\nThe input must be a 2D tuple.",
         model_comm_filepath=model_comm_filepath,
     )
     
     donothing_tool = ActionTool(
         name="DoNothing",
-        description="""
-        Sarcastically make the avatar do nothing.
-        The input must be left blank.
-        """,
+        description="Sarcastically make the avatar do nothing.\nThe input must be left blank.",
         model_comm_filepath=model_comm_filepath,
     )
     
-    react_tools = [
+    empty_tool = ActionTool(
+        name=" ",
+        description="The avatar does nothing",
+        model_comm_filepath=model_comm_filepath,
+    )
+    
+    react_tools = tool_list + [
         moveto_tool,
         donothing_tool,
+        empty_tool,
     ]
-    
-    # Profile :
-    angry_profile = """
-You are angry and this anger is slightly toxic to the room you are in.
-"""
     
     # Prompt :
     react_template = """
@@ -217,7 +215,7 @@ Context to consider:
         template=react_template_with_context,
         tools=react_tools,
         # TODO : make some more elaborate profiles
-        profile=angry_profile,
+        profile=profile,
         input_variables=["input", "intermediate_steps", 'history'] #"context"] 
     )
     
